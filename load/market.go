@@ -1,14 +1,14 @@
 package load
 
 type marketLoader struct {
-	mnsUrl string
+	mnsURL string
 	loader urlLoader
 }
 
-func newMarketLoader(mnsUrl string, loader urlLoader) marketLoader {
-	return marketLoader{mnsUrl: mnsUrl, loader: loader}
+func newMarketLoader(mnsURL string, loader urlLoader) marketLoader {
+	return marketLoader{mnsURL: mnsURL, loader: loader}
 }
 
 func (p marketLoader) load(marketID string) ([]byte, error) {
-	return p.loader(p.mnsUrl + "/markets/" + marketID)
+	return p.loader(p.mnsURL + "/markets/" + marketID)
 }
