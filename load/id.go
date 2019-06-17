@@ -14,7 +14,7 @@ func newIDLoader(mnsUrl string, loader urlLoader) idLoader {
 	return idLoader{mnsUrl: mnsUrl, loader: loader}
 }
 
-func (p idLoader) load() ([]string, error)  {
+func (p idLoader) load() ([]string, error) {
 	bytes, err := p.loader(p.mnsUrl + "/market-ids")
 	if err != nil {
 		return nil, errors.Wrap(err, "unable to load IDs")
