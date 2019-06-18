@@ -18,6 +18,14 @@ func TestDirectoryWriter(t *testing.T) {
 	require.NoError(t, err)
 }
 
+func TestDirectoryWriteFailure(t *testing.T) {
+	tempDir, err := ioutil.TempDir(".", "export")
+	writer := NewDirectoryWriter(tempDir)
+	require.NoError(t, os.RemoveAll(tempDir))
+	err = writer.Write("100", []byte("{}"))
+	require.Error(t, err)
+}
+
 func TestDirectoryWriterNotExist(t *testing.T) {
 	require.Panics(t, func() {
 		NewDirectoryWriter("/path/does/not/exist")

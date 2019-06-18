@@ -7,16 +7,16 @@ import (
 )
 
 type idLoader struct {
-	mnsURL string
+	url string
 	loader urlLoader
 }
 
-func newIDLoader(mnsURL string, loader urlLoader) idLoader {
-	return idLoader{mnsURL: mnsURL, loader: loader}
+func newIDLoader(url string, loader urlLoader) idLoader {
+	return idLoader{url: url, loader: loader}
 }
 
 func (p idLoader) LoadIDs() ([]string, error) {
-	bytes, err := p.loader(p.mnsURL)
+	bytes, err := p.loader(p.url)
 	if err != nil {
 		return nil, errors.Wrap(err, "unable to load IDs")
 	}

@@ -1,14 +1,14 @@
 package rest
 
 type dataLoader struct {
-	mnsURL string
+	url string
 	loader urlLoader
 }
 
-func newDataLoader(mnsURL string, loader urlLoader) dataLoader {
-	return dataLoader{mnsURL: mnsURL, loader: loader}
+func newDataLoader(url string, loader urlLoader) dataLoader {
+	return dataLoader{url: url, loader: loader}
 }
 
 func (p dataLoader) Load(id string) ([]byte, error) {
-	return p.loader(p.mnsURL + id)
+	return p.loader(p.url + id)
 }
