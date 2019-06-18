@@ -14,7 +14,7 @@ func TestDirectoryWriter(t *testing.T) {
 		require.NoError(t, os.RemoveAll(tempDir))
 	}()
 	writer := NewDirectoryWriter(tempDir)
-	err = writer.WriteMarket("100", []byte("{}"))
+	err = writer.Write("100", []byte("{}"))
 	require.NoError(t, err)
 }
 

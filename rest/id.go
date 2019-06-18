@@ -2,6 +2,7 @@ package rest
 
 import (
 	"encoding/json"
+
 	"github.com/pkg/errors"
 )
 
@@ -14,8 +15,8 @@ func newIDLoader(mnsURL string, loader urlLoader) idLoader {
 	return idLoader{mnsURL: mnsURL, loader: loader}
 }
 
-func (p idLoader) load() ([]string, error) {
-	bytes, err := p.loader(p.mnsURL + "/market-ids")
+func (p idLoader) LoadIDs() ([]string, error) {
+	bytes, err := p.loader(p.mnsURL)
 	if err != nil {
 		return nil, errors.Wrap(err, "unable to load IDs")
 	}

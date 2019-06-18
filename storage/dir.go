@@ -22,11 +22,11 @@ type DirectoryWriter struct {
 	dir string
 }
 
-// WriteMarket writes market to file, file name reflects market id
-func (dw DirectoryWriter) WriteMarket(id string, data []byte) error {
+// Write writes data to file, file name reflects data id
+func (dw DirectoryWriter) Write(id string, data []byte) error {
 	filePath := path.Join(dw.dir, id+".json")
 	if err := ioutil.WriteFile(filePath, data, 0644); err != nil {
-		return errors.Wrap(err, "unable to save market to file: "+filePath)
+		return errors.Wrap(err, "unable to save data to file: "+filePath)
 	}
 	return nil
 }

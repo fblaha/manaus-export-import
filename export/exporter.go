@@ -9,19 +9,19 @@ type idLoader interface {
 	LoadIDs() ([]string, error)
 }
 
-type marketLoader interface {
-	LoadMarket(id string) ([]byte, error)
+type dataLoader interface {
+	Load(id string) ([]byte, error)
 }
 
-type marketWriter interface {
-	WriteMarket(id string, data []byte) error
+type dataWriter interface {
+	Write(id string, data []byte) error
 }
 
 // Exporter does export
 type Exporter struct {
 	idLoader
-	marketLoader
-	marketWriter
+	dataLoader
+	dataWriter
 
 	dir      string
 	url      string
@@ -36,15 +36,16 @@ func (e Exporter) Execute() error {
 	}
 	// TODO concurrent execution
 	for _, id := range ids {
-		data, err := e.LoadMarket(id)
+		data, err := e.Load(id)
 		if err != nil {
 			return errors.Wrap(err, "unable to to load market: "+id)
 		}
-		err = e.WriteMarket(id, data)
+		err = e.Write(id, data)
 		if err != nil {
-			return errors.Wrap(err, "unable to to load market: "+id)
+			return errors.Wrap(err, "unable to to write market: "+id)
 		}
 	}
+	// TODO create archive
 	return nil
 
 }

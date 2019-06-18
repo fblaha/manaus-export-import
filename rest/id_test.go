@@ -15,14 +15,14 @@ func newFakeIDLoader(data string, err error) idLoader {
 
 func TestLoadIDs(t *testing.T) {
 	loader := newFakeIDLoader(`[ "aaa" ]`, nil)
-	ids, err := loader.load()
+	ids, err := loader.LoadIDs()
 	require.NoError(t, err)
 	require.NotEmpty(t, ids)
 }
 
 func TestLoadIDsParseError(t *testing.T) {
 	loader := newFakeIDLoader(`[ "aaa" `, nil)
-	ids, err := loader.load()
+	ids, err := loader.LoadIDs()
 	require.Error(t, err)
 	require.Contains(t, err.Error(), "unable to parse")
 	require.Nil(t, ids)
@@ -30,7 +30,7 @@ func TestLoadIDsParseError(t *testing.T) {
 
 func TestLoadIDsError(t *testing.T) {
 	loader := newFakeIDLoader("", fmt.Errorf("some error"))
-	ids, err := loader.load()
+	ids, err := loader.LoadIDs()
 	require.Error(t, err)
 	require.Contains(t, err.Error(), "some error")
 	require.Nil(t, ids)
