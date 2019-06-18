@@ -1,27 +1,15 @@
-package export
+package ei
 
 import (
 	"github.com/fblaha/manaus-export-import/pool"
 	"github.com/pkg/errors"
 )
 
-type idLoader interface {
-	LoadIDs() ([]string, error)
-}
-
-type dataLoader interface {
-	Load(id string) ([]byte, error)
-}
-
-type dataWriter interface {
-	Write(id string, data []byte) error
-}
-
 // Exporter does export
 type Exporter struct {
-	idLoader
-	dataLoader
-	dataWriter
+	IDLoader
+	DataLoader
+	DataWriter
 
 	dir      string
 	url      string

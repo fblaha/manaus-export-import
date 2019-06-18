@@ -22,7 +22,7 @@ type DirectoryWriter struct {
 	dir string
 }
 
-// Write writes data to file, file name reflects data id
+// Write writes data to file, file name reflects id
 func (dw DirectoryWriter) Write(id string, data []byte) error {
 	filePath := path.Join(dw.dir, id+".json")
 	if err := ioutil.WriteFile(filePath, data, 0644); err != nil {
