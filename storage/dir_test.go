@@ -11,7 +11,7 @@ import (
 func TestDirectoryWriter(t *testing.T) {
 	tempDir, err := ioutil.TempDir(".", "export")
 	defer func() {
-		require.NoError(t,os.RemoveAll(tempDir))
+		require.NoError(t, os.RemoveAll(tempDir))
 	}()
 	writer := NewDirectoryWriter(tempDir)
 	err = writer.WriteMarket("100", []byte("{}"))

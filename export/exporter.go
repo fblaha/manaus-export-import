@@ -17,6 +17,7 @@ type marketWriter interface {
 	WriteMarket(id string, data []byte) error
 }
 
+// Exporter does export
 type Exporter struct {
 	idLoader
 	marketLoader
@@ -27,11 +28,13 @@ type Exporter struct {
 	executor pool.Executor
 }
 
-func (e Exporter) Run() error {
+// Execute executes export
+func (e Exporter) Execute() error {
 	ids, err := e.LoadIDs()
 	if err != nil {
 		return errors.Wrap(err, "unable to read ids to export")
 	}
+	// TODO concurrent execution
 	for _, id := range ids {
 		data, err := e.LoadMarket(id)
 		if err != nil {
