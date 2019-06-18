@@ -1,4 +1,4 @@
-package load
+package rest
 
 type marketLoader struct {
 	mnsURL string
