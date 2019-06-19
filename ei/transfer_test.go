@@ -50,7 +50,7 @@ func TestTransferExecuteErrorID(t *testing.T) {
 	idLoader := mockIDLoader{err}
 	dataLoader := mockDataLoader{}
 	dataWriter := mockDataWriter{}
-	checkTransferror(idLoader, dataLoader, dataWriter, err, t)
+	checkTransferError(idLoader, dataLoader, dataWriter, err, t)
 }
 
 func TestTransferExecuteErrorDataLoad(t *testing.T) {
@@ -58,7 +58,7 @@ func TestTransferExecuteErrorDataLoad(t *testing.T) {
 	err := fmt.Errorf("data load error")
 	dataLoader := mockDataLoader{err}
 	dataWriter := mockDataWriter{}
-	checkTransferror(idLoader, dataLoader, dataWriter, err, t)
+	checkTransferError(idLoader, dataLoader, dataWriter, err, t)
 }
 
 func TestTransferExecuteErrorDataWrite(t *testing.T) {
@@ -66,10 +66,10 @@ func TestTransferExecuteErrorDataWrite(t *testing.T) {
 	dataLoader := mockDataLoader{}
 	err := fmt.Errorf("data write error")
 	dataWriter := mockDataWriter{err}
-	checkTransferror(idLoader, dataLoader, dataWriter, err, t)
+	checkTransferError(idLoader, dataLoader, dataWriter, err, t)
 }
 
-func checkTransferror(idLoader mockIDLoader, dataLoader mockDataLoader, dataWriter mockDataWriter, expectedErr error, t *testing.T) {
+func checkTransferError(idLoader mockIDLoader, dataLoader mockDataLoader, dataWriter mockDataWriter, expectedErr error, t *testing.T) {
 	transfer := NewTransfer(idLoader, dataLoader, dataWriter)
 	err := transfer.Execute()
 	require.Error(t, err)
