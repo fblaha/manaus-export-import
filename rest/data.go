@@ -1,7 +1,7 @@
 package rest
 
 type dataLoader struct {
-	url string
+	url    string
 	loader urlLoader
 }
 

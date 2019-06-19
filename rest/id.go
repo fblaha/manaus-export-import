@@ -7,7 +7,7 @@ import (
 )
 
 type idLoader struct {
-	url string
+	url    string
 	loader urlLoader
 }
 

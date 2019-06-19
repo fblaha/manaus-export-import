@@ -1,13 +1,12 @@
 package pool
 
 import (
-	"context"
 	"sync"
 	"testing"
 )
 
 func TestExecutorStartShutdown(t *testing.T) {
-	_, shutdown := NewExecutor(context.Background(), 10)
+	_, shutdown := NewExecutor(10)
 	shutdown()
 }
 
@@ -15,12 +14,12 @@ type mockWork struct {
 	*sync.WaitGroup
 }
 
-func (w *mockWork) Work(ctx context.Context) {
+func (w *mockWork) Work() {
 	w.Done()
 }
 
 func TestExecutorSubmit(t *testing.T) {
-	executor, shutdown := NewExecutor(context.Background(), 10)
+	executor, shutdown := NewExecutor(10)
 	defer shutdown()
 	var wg sync.WaitGroup
 	wg.Add(100)
