@@ -2,12 +2,13 @@ package ei
 
 import (
 	"fmt"
-	"github.com/fblaha/manaus-export-import/storage"
-	"github.com/pkg/errors"
-	"github.com/stretchr/testify/require"
 	"io/ioutil"
 	"os"
 	"testing"
+
+	"github.com/fblaha/manaus-export-import/storage"
+	"github.com/pkg/errors"
+	"github.com/stretchr/testify/require"
 )
 
 type mockIDLoader struct {
@@ -34,43 +35,43 @@ func (m mockDataWriter) Write(id string, data []byte) error {
 	return m.err
 }
 
-func TestExporterExecute(t *testing.T) {
+func TestTransferExecute(t *testing.T) {
 	tempDir, _ := ioutil.TempDir("", "export")
 	defer func() {
 		require.NoError(t, os.RemoveAll(tempDir))
 	}()
 	writer := storage.NewDirectoryWriter(tempDir, ".txt")
-	exporter := NewExporter(mockIDLoader{}, mockDataLoader{}, writer)
-	require.NoError(t, exporter.Execute())
+	transfer := NewTransfer(mockIDLoader{}, mockDataLoader{}, writer)
+	require.NoError(t, transfer.Execute())
 }
 
-func TestExporterExecuteErrorID(t *testing.T) {
+func TestTransferExecuteErrorID(t *testing.T) {
 	err := fmt.Errorf("id fetch error")
 	idLoader := mockIDLoader{err}
 	dataLoader := mockDataLoader{}
 	dataWriter := mockDataWriter{}
-	checkExportError(idLoader, dataLoader, dataWriter, err, t)
+	checkTransferror(idLoader, dataLoader, dataWriter, err, t)
 }
 
-func TestExporterExecuteErrorDataLoad(t *testing.T) {
+func TestTransferExecuteErrorDataLoad(t *testing.T) {
 	idLoader := mockIDLoader{}
 	err := fmt.Errorf("data load error")
 	dataLoader := mockDataLoader{err}
 	dataWriter := mockDataWriter{}
-	checkExportError(idLoader, dataLoader, dataWriter, err, t)
+	checkTransferror(idLoader, dataLoader, dataWriter, err, t)
 }
 
-func TestExporterExecuteErrorDataWrite(t *testing.T) {
+func TestTransferExecuteErrorDataWrite(t *testing.T) {
 	idLoader := mockIDLoader{}
 	dataLoader := mockDataLoader{}
 	err := fmt.Errorf("data write error")
 	dataWriter := mockDataWriter{err}
-	checkExportError(idLoader, dataLoader, dataWriter, err, t)
+	checkTransferror(idLoader, dataLoader, dataWriter, err, t)
 }
 
-func checkExportError(idLoader mockIDLoader, dataLoader mockDataLoader, dataWriter mockDataWriter, expectedErr error, t *testing.T) {
-	exporter := NewExporter(idLoader, dataLoader, dataWriter)
-	err := exporter.Execute()
+func checkTransferror(idLoader mockIDLoader, dataLoader mockDataLoader, dataWriter mockDataWriter, expectedErr error, t *testing.T) {
+	transfer := NewTransfer(idLoader, dataLoader, dataWriter)
+	err := transfer.Execute()
 	require.Error(t, err)
 	require.Equal(t, expectedErr, errors.Cause(err))
 }

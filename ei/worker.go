@@ -1,23 +1,23 @@
 package ei
 
-type exportResult struct {
+type transferResult struct {
 	id  string
 	err error
 }
 
-type exportWorker struct {
+type transferWorker struct {
 	DataLoader
 	DataWriter
 	id string
-	c  chan<- exportResult
+	c  chan<- transferResult
 }
 
-func (w exportWorker) Work() {
+func (w transferWorker) Work() {
 	data, err := w.Load(w.id)
 	if err != nil {
-		w.c <- exportResult{w.id, err}
+		w.c <- transferResult{w.id, err}
 		return
 	}
 	err = w.Write(w.id, data)
-	w.c <- exportResult{w.id, err}
+	w.c <- transferResult{w.id, err}
 }
