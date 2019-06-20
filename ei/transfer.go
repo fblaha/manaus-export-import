@@ -54,10 +54,6 @@ func (t Transfer) Execute(concurrency int) error {
 	return t.collectResults(submitted, results)
 }
 
-func (t Transfer) submitTransferWork(executor pool.Executor, ids []string, results chan<- transferResult) int {
-	return len(ids)
-}
-
 func (t Transfer) collectResults(count int, writeResults <-chan transferResult) (err error) {
 	for i := 0; i < count; i++ {
 		wr := <-writeResults

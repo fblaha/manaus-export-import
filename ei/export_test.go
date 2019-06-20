@@ -35,7 +35,7 @@ func TestExport(t *testing.T) {
 	conf := config.Conf{
 		URL:         ts.URL,
 		ArchiveFile: archive,
-		Concurrency: 1,
+		Concurrency: 10,
 	}
 	Export(conf)
 }
