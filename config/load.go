@@ -24,6 +24,7 @@ func LoadConfig() Conf {
 	flag.StringVar(&url, "url", "http://localhost:7777", "rest URL")
 	flag.StringVar(&archive, "archive", archiveFile(), "archive file")
 	flag.IntVar(&concurrency, "concurrency", runtime.NumCPU(), "goroutines count")
+	flag.Parse()
 	conf := Conf{ArchiveFile: archive, Concurrency: concurrency, URL: url}
 	log.Printf("loaded config : %+v", conf)
 	return conf
