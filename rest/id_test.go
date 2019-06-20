@@ -7,8 +7,8 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func newFakeIDLoader(data string, err error) idLoader {
-	return newIDLoader("http://ignored", func(url string) (bytes []byte, e error) {
+func newFakeIDLoader(data string, err error) IDLoader {
+	return NewIDLoader("http://ignored", func(url string) (bytes []byte, e error) {
 		return []byte(data), err
 	})
 }

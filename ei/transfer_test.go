@@ -42,7 +42,12 @@ func TestTransferExecute(t *testing.T) {
 	}()
 	writer := storage.NewDirectoryWriter(tempDir, ".txt")
 	transfer := NewTransfer(mockIDLoader{}, mockDataLoader{}, writer)
-	require.NoError(t, transfer.Execute())
+	require.NoError(t, transfer.Execute(10))
+	infos, _ := ioutil.ReadDir(tempDir)
+	require.Len(t, infos, 3)
+	for i, info := range infos {
+		require.Equal(t, fmt.Sprintf("%d.txt", i+1), info.Name())
+	}
 }
 
 func TestTransferExecuteErrorID(t *testing.T) {
@@ -71,7 +76,7 @@ func TestTransferExecuteErrorDataWrite(t *testing.T) {
 
 func checkTransferError(idLoader mockIDLoader, dataLoader mockDataLoader, dataWriter mockDataWriter, expectedErr error, t *testing.T) {
 	transfer := NewTransfer(idLoader, dataLoader, dataWriter)
-	err := transfer.Execute()
+	err := transfer.Execute(10)
 	require.Error(t, err)
 	require.Equal(t, expectedErr, errors.Cause(err))
 }

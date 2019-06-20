@@ -15,7 +15,7 @@ func TestLoadURL(t *testing.T) {
 	}))
 	defer ts.Close()
 
-	res, err := loadURL(ts.URL)
+	res, err := LoadURL(ts.URL)
 	require.NoError(t, err)
 
 	require.Equal(t, "42", string(res))

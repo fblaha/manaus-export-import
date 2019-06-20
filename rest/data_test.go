@@ -8,7 +8,7 @@ import (
 
 func TestDataFetch(t *testing.T) {
 	var calledURL string
-	loader := newDataLoader("http://mns/rest/markets/", func(url string) (bytes []byte, e error) {
+	loader := NewDataLoader("http://mns/rest/markets/", func(url string) (bytes []byte, e error) {
 		calledURL = url
 		return []byte("{}"), nil
 	})

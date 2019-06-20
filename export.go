@@ -1,14 +1,10 @@
 package main
 
-import "fmt"
-import "flag"
+import (
+	"github.com/fblaha/manaus-export-import/config"
+	"github.com/fblaha/manaus-export-import/ei"
+)
 
 func main() {
-	var url string
-	var archive string
-
-	flag.StringVar(&url, "url", "http://localhost:7777", "rest URL")
-	flag.StringVar(&archive, "archive", "export.zip", "archive file")
-	fmt.Println(url)
-	fmt.Println(archive)
+	ei.Export(config.LoadConfig())
 }

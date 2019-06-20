@@ -21,17 +21,15 @@ func NewTransfer(
 }
 
 // Execute executes data transfer
-func (t Transfer) Execute() error {
-	// TODO hardcoded constants
-	executor, shutdown := pool.NewExecutor(10)
+func (t Transfer) Execute(concurrency int) error {
+	executor, shutdown := pool.NewExecutor(concurrency)
 	defer shutdown()
 	ids, err := t.LoadIDs()
 	if err != nil {
-		return errors.Wrap(err, "unable to read ids to move")
+		return errors.Wrap(err, "unable to read ids to transfer")
 	}
 
-	// TODO hardcoded constants
-	results := make(chan transferResult, 0)
+	results := make(chan transferResult, 1)
 	defer close(results)
 
 	submitted := t.submitTransferWork(executor, ids, results)

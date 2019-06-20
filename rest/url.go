@@ -10,7 +10,8 @@ import (
 
 type urlLoader func(url string) ([]byte, error)
 
-func loadURL(url string) ([]byte, error) {
+// LoadURL loads bytes from URL
+func LoadURL(url string) ([]byte, error) {
 	req, err := http.NewRequest("GET", url, nil)
 	if err != nil {
 		return nil, errors.Wrap(err, "unable to create request")
