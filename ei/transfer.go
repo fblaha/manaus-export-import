@@ -1,6 +1,8 @@
 package ei
 
 import (
+	"sync"
+
 	"github.com/fblaha/manaus-export-import/pool"
 	"github.com/pkg/errors"
 )
@@ -32,20 +34,27 @@ func (t Transfer) Execute(concurrency int) error {
 	results := make(chan transferResult, 1)
 	defer close(results)
 
-	submitted := t.submitTransferWork(executor, ids, results)
+	var wg sync.WaitGroup
+	wg.Add(1)
+	defer wg.Wait()
+	go func() {
+		defer wg.Done()
+		for _, id := range ids {
+			executor.Submit(transferWorker{
+				DataLoader: t.DataLoader,
+				DataWriter: t.DataWriter,
+				id:         id,
+				c:          results,
+			})
+		}
+	}()
+
+	submitted := len(ids)
 
 	return t.collectResults(submitted, results)
 }
 
 func (t Transfer) submitTransferWork(executor pool.Executor, ids []string, results chan<- transferResult) int {
-	for _, id := range ids {
-		executor.Submit(transferWorker{
-			DataLoader: t.DataLoader,
-			DataWriter: t.DataWriter,
-			id:         id,
-			c:          results,
-		})
-	}
 	return len(ids)
 }
 
