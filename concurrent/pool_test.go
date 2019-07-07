@@ -1,4 +1,4 @@
-package pool
+package concurrent
 
 import (
 	"sync"
@@ -6,12 +6,12 @@ import (
 )
 
 func TestExecutorStartShutdown(t *testing.T) {
-	_, shutdown := NewExecutor(10)
-	shutdown()
+	executor := NewPoolExecutor(10)
+	executor.WaitShutdown()
 }
 
 type mockWork struct {
-	*sync.WaitGroup
+	sync.WaitGroup
 }
 
 func (w *mockWork) Work() {
@@ -19,13 +19,12 @@ func (w *mockWork) Work() {
 }
 
 func TestExecutorSubmit(t *testing.T) {
-	executor, shutdown := NewExecutor(10)
-	defer shutdown()
-	var wg sync.WaitGroup
-	wg.Add(100)
+	executor := NewPoolExecutor(10)
+	defer executor.WaitShutdown()
+	var work mockWork
+	work.Add(100)
 	for i := 0; i < 100; i++ {
-		work := mockWork{&wg}
 		executor.Submit(&work)
 	}
-	wg.Wait()
+	work.Wait()
 }

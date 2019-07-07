@@ -3,7 +3,7 @@ package ei
 import (
 	"sync"
 
-	"github.com/fblaha/manaus-export-import/pool"
+	"github.com/fblaha/manaus-export-import/concurrent"
 	"github.com/pkg/errors"
 )
 
@@ -24,28 +24,27 @@ func NewTransfer(
 
 // Execute executes data transfer
 func (t Transfer) Execute(concurrency int) error {
-	executor, shutdown := pool.NewExecutor(concurrency)
-	defer shutdown()
+	executor := concurrent.NewPoolExecutor(concurrency)
 	ids, err := t.LoadIDs()
 	if err != nil {
 		return errors.Wrap(err, "unable to read ids to transfer")
 	}
 
 	results := make(chan transferResult, 1)
-	defer close(results)
 
 	var wg sync.WaitGroup
 	wg.Add(1)
 	defer wg.Wait()
 	go func() {
 		defer wg.Done()
-		t.submit(ids, executor, results)
+		t.submitWait(ids, executor, results)
+		close(results)
 	}()
 
-	return t.collectResults(len(ids), results)
+	return t.collectResults(results)
 }
 
-func (t Transfer) submit(ids []string, executor pool.Executor, results chan<- transferResult) {
+func (t Transfer) submitWait(ids []string, executor *concurrent.PoolExecutor, results chan<- transferResult) {
 	for _, id := range ids {
 		executor.Submit(transferWorker{
 			DataLoader: t.DataLoader,
@@ -54,11 +53,11 @@ func (t Transfer) submit(ids []string, executor pool.Executor, results chan<- tr
 			c:          results,
 		})
 	}
+	executor.WaitShutdown()
 }
 
-func (t Transfer) collectResults(count int, results <-chan transferResult) (err error) {
-	for i := 0; i < count; i++ {
-		wr := <-results
+func (t Transfer) collectResults(results <-chan transferResult) (err error) {
+	for wr := range results {
 		if wr.err != nil {
 			err = wr.err
 		}
