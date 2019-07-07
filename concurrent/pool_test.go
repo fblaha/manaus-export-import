@@ -7,7 +7,7 @@ import (
 
 func TestExecutorStartShutdown(t *testing.T) {
 	executor := NewPoolExecutor(10)
-	executor.WaitShutdown()
+	executor.ShutdownGracefully()
 }
 
 type mockWork struct {
@@ -20,7 +20,7 @@ func (w *mockWork) Work() {
 
 func TestExecutorSubmit(t *testing.T) {
 	executor := NewPoolExecutor(10)
-	defer executor.WaitShutdown()
+	defer executor.ShutdownGracefully()
 	var work mockWork
 	work.Add(100)
 	for i := 0; i < 100; i++ {

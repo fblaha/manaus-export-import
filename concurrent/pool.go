@@ -4,12 +4,12 @@ import (
 	"sync"
 )
 
-// Worker does work
+// Worker does the work
 type Worker interface {
 	Work()
 }
 
-// PoolExecutor distributes works to pool of gouroutines
+// PoolExecutor distributes works to the pool of gouroutines
 type PoolExecutor struct {
 	workWG sync.WaitGroup
 	poolWG sync.WaitGroup
@@ -22,25 +22,27 @@ func NewPoolExecutor(concurrency int) *PoolExecutor {
 	executor := PoolExecutor{todo: todo}
 	executor.poolWG.Add(concurrency)
 	for i := 0; i < concurrency; i++ {
-		go func() {
-			defer executor.poolWG.Done()
-			for w := range todo {
-				w.Work()
-				executor.workWG.Done()
-			}
-		}()
+		go executor.handleWork()
 	}
 	return &executor
 }
 
-// Submit submits work for execution
+func (e *PoolExecutor) handleWork() {
+	defer e.poolWG.Done()
+	for w := range e.todo {
+		w.Work()
+		e.workWG.Done()
+	}
+}
+
+// Submit submits the work for execution
 func (e *PoolExecutor) Submit(worker Worker) {
 	e.workWG.Add(1)
 	e.todo <- worker
 }
 
-// WaitShutdown waits for completeion of submitted work and terminates worker goroutines
-func (e *PoolExecutor) WaitShutdown() {
+// ShutdownGracefully waits for completeion of the submitted work and terminates worker goroutines
+func (e *PoolExecutor) ShutdownGracefully() {
 	e.workWG.Wait()
 	close(e.todo)
 	e.poolWG.Wait()

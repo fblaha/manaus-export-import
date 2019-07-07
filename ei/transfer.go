@@ -53,7 +53,7 @@ func (t Transfer) submitWait(ids []string, executor *concurrent.PoolExecutor, re
 			c:          results,
 		})
 	}
-	executor.WaitShutdown()
+	executor.ShutdownGracefully()
 }
 
 func (t Transfer) collectResults(results <-chan transferResult) (err error) {
