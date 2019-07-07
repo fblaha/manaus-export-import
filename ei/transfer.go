@@ -39,24 +39,26 @@ func (t Transfer) Execute(concurrency int) error {
 	defer wg.Wait()
 	go func() {
 		defer wg.Done()
-		for _, id := range ids {
-			executor.Submit(transferWorker{
-				DataLoader: t.DataLoader,
-				DataWriter: t.DataWriter,
-				id:         id,
-				c:          results,
-			})
-		}
+		t.submit(ids, executor, results)
 	}()
 
-	submitted := len(ids)
-
-	return t.collectResults(submitted, results)
+	return t.collectResults(len(ids), results)
 }
 
-func (t Transfer) collectResults(count int, writeResults <-chan transferResult) (err error) {
+func (t Transfer) submit(ids []string, executor pool.Executor, results chan<- transferResult) {
+	for _, id := range ids {
+		executor.Submit(transferWorker{
+			DataLoader: t.DataLoader,
+			DataWriter: t.DataWriter,
+			id:         id,
+			c:          results,
+		})
+	}
+}
+
+func (t Transfer) collectResults(count int, results <-chan transferResult) (err error) {
 	for i := 0; i < count; i++ {
-		wr := <-writeResults
+		wr := <-results
 		if wr.err != nil {
 			err = wr.err
 		}
