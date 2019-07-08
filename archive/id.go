@@ -8,7 +8,7 @@ import (
 	"github.com/pkg/errors"
 )
 
-// IDLoader capable of loading from directory
+// IDLoader capable of loading IDs from files names in the directory
 type IDLoader struct {
 	dir    string
 	suffix string
@@ -19,7 +19,7 @@ func NewIDLoader(dir string, suffix string) IDLoader {
 	return IDLoader{dir: dir, suffix: suffix}
 }
 
-// LoadIDs loads list of IDs from URL
+// LoadIDs extracts IDs from file names in the directory
 func (l IDLoader) LoadIDs() ([]string, error) {
 	log.Println("loading IDs from :", l.dir)
 	files, err := ioutil.ReadDir(l.dir)
@@ -28,8 +28,11 @@ func (l IDLoader) LoadIDs() ([]string, error) {
 	}
 	var ids []string
 	for _, file := range files {
-		id := strings.TrimSuffix(file.Name(), l.suffix)
-		ids = append(ids, id)
+		fileName := file.Name()
+		if strings.HasSuffix(fileName, l.suffix) {
+			id := strings.TrimSuffix(fileName, l.suffix)
+			ids = append(ids, id)
+		}
 	}
 	return ids, nil
 }
