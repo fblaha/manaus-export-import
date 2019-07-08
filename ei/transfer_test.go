@@ -6,7 +6,7 @@ import (
 	"os"
 	"testing"
 
-	"github.com/fblaha/manaus-export-import/storage"
+	"github.com/fblaha/manaus-export-import/archive"
 	"github.com/pkg/errors"
 	"github.com/stretchr/testify/require"
 )
@@ -40,7 +40,7 @@ func TestTransferExecute(t *testing.T) {
 	defer func() {
 		require.NoError(t, os.RemoveAll(tempDir))
 	}()
-	writer := storage.NewDirectoryWriter(tempDir, ".txt")
+	writer := archive.NewWriter(tempDir, ".txt")
 	transfer := NewTransfer(mockIDLoader{}, mockDataLoader{}, writer)
 	require.NoError(t, transfer.Execute(10))
 	infos, _ := ioutil.ReadDir(tempDir)

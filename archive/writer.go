@@ -1,4 +1,4 @@
-package storage
+package archive
 
 import (
 	"github.com/mholt/archiver"
@@ -10,23 +10,23 @@ import (
 	"github.com/pkg/errors"
 )
 
-// NewDirectoryWriter constructor
-func NewDirectoryWriter(dir string, suffix string) DirectoryWriter {
+// NewWriter constructor
+func NewWriter(dir string, suffix string) Writer {
 	if _, err := os.Stat(dir); os.IsNotExist(err) {
 		log.Panic("dir does not exist: ", err)
 	}
-	return DirectoryWriter{dir: dir, suffix: suffix}
+	return Writer{dir: dir, suffix: suffix}
 }
 
-// DirectoryWriter writes to directory by id
-type DirectoryWriter struct {
+// Writer writes to directory by id
+type Writer struct {
 	dir    string
 	suffix string
 }
 
 // Write writes data to file, file name reflects id
-func (dw DirectoryWriter) Write(id string, data []byte) error {
-	filePath := path.Join(dw.dir, id+dw.suffix)
+func (w Writer) Write(id string, data []byte) error {
+	filePath := path.Join(w.dir, id+w.suffix)
 	log.Println("writing data to :", filePath)
 	if err := ioutil.WriteFile(filePath, data, 0644); err != nil {
 		return errors.Wrap(err, "unable to save data to file : "+filePath)
@@ -35,19 +35,19 @@ func (dw DirectoryWriter) Write(id string, data []byte) error {
 }
 
 // MakeArchive makes an archive
-func (dw DirectoryWriter) MakeArchive(file string) error {
-	infos, err := ioutil.ReadDir(dw.dir)
+func (w Writer) MakeArchive(file string) error {
+	infos, err := ioutil.ReadDir(w.dir)
 	if err != nil {
-		return errors.Wrap(err, "unable to read directory : "+dw.dir)
+		return errors.Wrap(err, "unable to read directory : "+w.dir)
 	}
 	var files []string
 	for _, info := range infos {
-		files = append(files, path.Join(dw.dir, info.Name()))
+		files = append(files, path.Join(w.dir, info.Name()))
 	}
 	return archiver.Archive(files, file)
 }
 
 // Purge purges tmp dir
-func (dw DirectoryWriter) Purge() error {
-	return os.RemoveAll(dw.dir)
+func (w Writer) Purge() error {
+	return os.RemoveAll(w.dir)
 }

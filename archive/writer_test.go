@@ -1,4 +1,4 @@
-package storage
+package archive
 
 import (
 	"io/ioutil"
@@ -9,27 +9,27 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestDirectoryWriter(t *testing.T) {
+func TestWriter(t *testing.T) {
 	tempDir, err := ioutil.TempDir(".", "export")
 	defer func() {
 		require.NoError(t, os.RemoveAll(tempDir))
 	}()
-	writer := NewDirectoryWriter(tempDir, ".txt")
+	writer := NewWriter(tempDir, ".txt")
 	err = writer.Write("100", []byte("{}"))
 	require.NoError(t, err)
 }
 
 func TestDirectoryWriteFailure(t *testing.T) {
 	tempDir, err := ioutil.TempDir(".", "export")
-	writer := NewDirectoryWriter(tempDir, ".txt")
+	writer := NewWriter(tempDir, ".txt")
 	require.NoError(t, writer.Purge())
 	err = writer.Write("100", []byte("{}"))
 	require.Error(t, err)
 }
 
-func TestDirectoryWriterNotExist(t *testing.T) {
+func TestWriterNotExist(t *testing.T) {
 	require.Panics(t, func() {
-		NewDirectoryWriter("/path/does/not/exist", ".txt")
+		NewWriter("/path/does/not/exist", ".txt")
 	})
 }
 
@@ -39,7 +39,7 @@ func TestDirectoryArchive(t *testing.T) {
 	defer func() {
 		require.NoError(t, os.RemoveAll(tempDir))
 	}()
-	writer := NewDirectoryWriter(tempDir, ".txt")
+	writer := NewWriter(tempDir, ".txt")
 	err = writer.Write("100", []byte("{}"))
 	require.NoError(t, err)
 
@@ -52,7 +52,7 @@ func TestDirectoryArchive(t *testing.T) {
 func TestDirectoryPurge(t *testing.T) {
 	tempDir, err := ioutil.TempDir("", "export")
 	require.NoError(t, err)
-	writer := NewDirectoryWriter(tempDir, ".txt")
+	writer := NewWriter(tempDir, ".txt")
 	require.DirExists(t, tempDir)
 	require.NoError(t, writer.Purge())
 }

@@ -1,15 +1,15 @@
 package ei
 
 import (
+	"github.com/fblaha/manaus-export-import/archive"
 	"github.com/fblaha/manaus-export-import/config"
 	"github.com/fblaha/manaus-export-import/rest"
-	"github.com/fblaha/manaus-export-import/storage"
 	"io/ioutil"
 	"log"
 )
 
 type export struct {
-	storage.DirectoryWriter
+	archive.Writer
 	Transfer
 }
 
@@ -19,12 +19,12 @@ func configureExport(conf config.Conf) (export, error) {
 		return export{}, err
 	}
 	log.Println("temp directory created : ", tempDir)
-	directoryWriter := storage.NewDirectoryWriter(tempDir, ".json")
+	Writer := archive.NewWriter(tempDir, ".json")
 
 	idLoader := rest.NewIDLoader(conf.URL+"/market-ids/", rest.LoadURL)
 	dataLoader := rest.NewDataLoader(conf.URL+"/footprints/", rest.LoadURL)
-	transfer := NewTransfer(idLoader, dataLoader, directoryWriter)
-	return export{DirectoryWriter: directoryWriter, Transfer: transfer}, nil
+	transfer := NewTransfer(idLoader, dataLoader, Writer)
+	return export{Writer: Writer, Transfer: transfer}, nil
 
 }
 
