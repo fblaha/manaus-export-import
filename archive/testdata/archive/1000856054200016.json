@@ -1,0 +1,47 @@
+{
+  "market": {
+    "id": "1000856054200016",
+    "name": "Match Odds",
+    "matchedAmount": 0.0,
+    "inPlay": false,
+    "type": "match_odds",
+    "eventType": {
+      "id": "15",
+      "name": "Soccer"
+    },
+    "competition": {
+      "id": "408548128130010",
+      "name": "Championship"
+    },
+    "event": {
+      "id": "1000856053930015",
+      "name": "Leeds United vs Derby County",
+      "countryCode": null,
+      "timezone": null,
+      "venue": null,
+      "openDate": "2019-01-11T19:45:00Z"
+    },
+    "runners": [
+      {
+        "selectionId": 1000856054280015,
+        "name": "Leeds United",
+        "handicap": 0.0,
+        "sortPriority": 0
+      },
+      {
+        "selectionId": 1000856054280016,
+        "name": "Derby County",
+        "handicap": 0.0,
+        "sortPriority": 1
+      },
+      {
+        "selectionId": 1000856054350015,
+        "name": "DRAW (Lee/Der)",
+        "handicap": 0.0,
+        "sortPriority": 2
+      }
+    ]
+  },
+  "betActions": [],
+  "settledBets": []
+}
