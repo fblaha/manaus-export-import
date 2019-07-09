@@ -1,18 +1,17 @@
 package archive
 
 import (
-	"github.com/mholt/archiver"
-	"io/ioutil"
-	"os"
 	"path/filepath"
 	"testing"
+
+	"github.com/mholt/archiver"
 
 	"github.com/stretchr/testify/require"
 )
 
 func TestExtractToTmpDir(t *testing.T) {
-	tempDir, err := ioutil.TempDir("", "mns-test")
-	defer os.RemoveAll(tempDir)
+	tempDir, purge, err := CreateTempDir()
+	defer purge()
 	require.NoError(t, err)
 	content := filepath.Join("testdata", "archive", "1000856054200016.json")
 	testArchive := filepath.Join(tempDir, "testArchive.zip")

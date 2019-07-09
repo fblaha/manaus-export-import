@@ -3,7 +3,6 @@ package ei
 import (
 	"fmt"
 	"io/ioutil"
-	"os"
 	"testing"
 
 	"github.com/fblaha/manaus-export-import/archive"
@@ -36,10 +35,9 @@ func (m mockDataWriter) Write(id string, data []byte) error {
 }
 
 func TestTransferExecute(t *testing.T) {
-	tempDir, _ := ioutil.TempDir("", "export")
-	defer func() {
-		require.NoError(t, os.RemoveAll(tempDir))
-	}()
+	tempDir, purge, err := archive.CreateTempDir()
+	require.NoError(t, err)
+	defer purge()
 	writer := archive.NewWriter(tempDir, ".txt")
 	transfer := NewTransfer(mockIDLoader{}, mockDataLoader{}, writer)
 	require.NoError(t, transfer.Execute(10))

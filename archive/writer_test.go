@@ -1,8 +1,6 @@
 package archive
 
 import (
-	"io/ioutil"
-	"os"
 	"path"
 	"testing"
 
@@ -10,19 +8,18 @@ import (
 )
 
 func TestWriter(t *testing.T) {
-	tempDir, err := ioutil.TempDir(".", "export")
-	defer func() {
-		require.NoError(t, os.RemoveAll(tempDir))
-	}()
+	tempDir, purge, err := CreateTempDir()
+	defer purge()
 	writer := NewWriter(tempDir, ".txt")
 	err = writer.Write("100", []byte("{}"))
 	require.NoError(t, err)
 }
 
 func TestDirectoryWriteFailure(t *testing.T) {
-	tempDir, err := ioutil.TempDir(".", "export")
+	tempDir, purge, err := CreateTempDir()
+	defer purge()
 	writer := NewWriter(tempDir, ".txt")
-	require.NoError(t, writer.Purge())
+	purge()
 	err = writer.Write("100", []byte("{}"))
 	require.Error(t, err)
 }
@@ -34,11 +31,9 @@ func TestWriterNotExist(t *testing.T) {
 }
 
 func TestDirectoryArchive(t *testing.T) {
-	tempDir, err := ioutil.TempDir("", "export")
+	tempDir, purge, err := CreateTempDir()
+	defer purge()
 	require.NoError(t, err)
-	defer func() {
-		require.NoError(t, os.RemoveAll(tempDir))
-	}()
 	writer := NewWriter(tempDir, ".txt")
 	err = writer.Write("100", []byte("{}"))
 	require.NoError(t, err)
@@ -47,12 +42,4 @@ func TestDirectoryArchive(t *testing.T) {
 	err = writer.MakeArchive(archiveFile)
 	require.NoError(t, err)
 	require.FileExists(t, archiveFile)
-}
-
-func TestDirectoryPurge(t *testing.T) {
-	tempDir, err := ioutil.TempDir("", "export")
-	require.NoError(t, err)
-	writer := NewWriter(tempDir, ".txt")
-	require.DirExists(t, tempDir)
-	require.NoError(t, writer.Purge())
 }

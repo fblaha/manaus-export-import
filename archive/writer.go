@@ -1,11 +1,12 @@
 package archive
 
 import (
-	"github.com/mholt/archiver"
 	"io/ioutil"
 	"log"
 	"os"
 	"path"
+
+	"github.com/mholt/archiver"
 
 	"github.com/pkg/errors"
 )

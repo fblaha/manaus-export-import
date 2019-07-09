@@ -1,14 +1,15 @@
 package ei
 
 import (
-	"github.com/fblaha/manaus-export-import/config"
-	"github.com/stretchr/testify/require"
 	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
-	"os"
 	"path/filepath"
 	"testing"
+
+	"github.com/fblaha/manaus-export-import/archive"
+	"github.com/fblaha/manaus-export-import/config"
+	"github.com/stretchr/testify/require"
 
 	"github.com/mholt/archiver"
 )
@@ -23,8 +24,8 @@ func TestImport(t *testing.T) {
 	}))
 	defer ts.Close()
 
-	tempDir, err := ioutil.TempDir("", "mns-test")
-	defer os.RemoveAll(tempDir)
+	tempDir, purge, err := archive.CreateTempDir()
+	defer purge()
 	require.NoError(t, err)
 	content := filepath.Join("testdata", "1000856224250015.json")
 	testArchive := filepath.Join(tempDir, "testArchive.zip")

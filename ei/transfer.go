@@ -1,6 +1,7 @@
 package ei
 
 import (
+	"log"
 	"sync"
 
 	"github.com/fblaha/manaus-export-import/concurrent"
@@ -59,6 +60,7 @@ func (t Transfer) submitWait(ids []string, executor *concurrent.PoolExecutor, re
 func (t Transfer) collectResults(results <-chan transferResult) (err error) {
 	for wr := range results {
 		if wr.err != nil {
+			log.Printf("data transfer failed id: %s  error: %+v", wr.id, wr.err)
 			err = wr.err
 		}
 	}

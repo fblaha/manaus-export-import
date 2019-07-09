@@ -2,22 +2,21 @@ package ei
 
 import (
 	"fmt"
-	"github.com/fblaha/manaus-export-import/config"
-	"github.com/stretchr/testify/require"
 	"net/http"
 	"net/http/httptest"
 	"os"
 	"testing"
 	"time"
+
+	"github.com/fblaha/manaus-export-import/config"
+	"github.com/stretchr/testify/require"
 )
 
 func TestConfigureExport(t *testing.T) {
 	loadConfig := config.LoadConfig()
 	export, err := configureExport(loadConfig)
 	require.NoError(t, err)
-	defer func() {
-		require.NoError(t, export.Purge())
-	}()
+	defer export.Purge()
 }
 
 func TestExport(t *testing.T) {
