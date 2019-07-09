@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"runtime"
+	"strings"
 	"time"
 )
 
@@ -15,13 +16,23 @@ type Conf struct {
 	Concurrency int
 }
 
+// FootprintsURL according to the name
+func (c Conf) FootprintsURL() string {
+	return strings.TrimSuffix(c.URL, "/") + "/footprints/"
+}
+
+// MarketIDsURL according to the name
+func (c Conf) MarketIDsURL() string {
+	return strings.TrimSuffix(c.URL, "/") + "/market-ids/"
+}
+
 // LoadConfig parse cli args
 func LoadConfig() Conf {
 	var url string
 	var archive string
 	var concurrency int
 
-	flag.StringVar(&url, "url", "http://localhost:7777", "rest URL")
+	flag.StringVar(&url, "url", "http://localhost:7777/", "rest URL")
 	flag.StringVar(&archive, "archive", archiveFile(), "archive file")
 	flag.IntVar(&concurrency, "concurrency", runtime.NumCPU(), "goroutines count")
 	flag.Parse()

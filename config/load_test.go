@@ -10,11 +10,13 @@ import (
 func TestLoadConfigDefault(t *testing.T) {
 	config := LoadConfig()
 	expected := Conf{
-		URL:         "http://localhost:7777",
+		URL:         "http://localhost:7777/",
 		Concurrency: runtime.NumCPU(),
 		ArchiveFile: config.ArchiveFile,
 	}
 	require.Equal(t, config, expected)
+	require.Equal(t, config.MarketIDsURL(), "http://localhost:7777/market-ids/")
+	require.Equal(t, config.FootprintsURL(), "http://localhost:7777/footprints/")
 }
 
 func TestArchiveFile(t *testing.T) {

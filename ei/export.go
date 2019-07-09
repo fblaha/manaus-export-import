@@ -21,8 +21,8 @@ func configureExport(conf config.Conf) (export, func(), error) {
 	log.Println("temp directory created:", tempDir)
 	Writer := archive.NewWriter(tempDir, ".json")
 
-	idLoader := rest.NewIDLoader(conf.URL+"/market-ids/", rest.LoadURL)
-	dataLoader := rest.NewDataLoader(conf.URL+"/footprints/", rest.LoadURL)
+	idLoader := rest.NewIDLoader(conf.MarketIDsURL(), rest.LoadURL)
+	dataLoader := rest.NewDataLoader(conf.FootprintsURL(), rest.LoadURL)
 	transfer := NewTransfer(idLoader, dataLoader, Writer)
 	return export{Writer: Writer, Transfer: transfer}, purge, nil
 
