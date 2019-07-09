@@ -14,9 +14,9 @@ import (
 
 func TestConfigureExport(t *testing.T) {
 	loadConfig := config.LoadConfig()
-	export, err := configureExport(loadConfig)
+	_, purge, err := configureExport(loadConfig)
 	require.NoError(t, err)
-	defer export.Purge()
+	defer purge()
 }
 
 func TestExport(t *testing.T) {
