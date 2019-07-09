@@ -9,7 +9,7 @@ type Worker interface {
 	Work()
 }
 
-// PoolExecutor distributes works to the pool of gouroutines
+// PoolExecutor distributes works to the pool of goroutines
 type PoolExecutor struct {
 	workWG sync.WaitGroup
 	poolWG sync.WaitGroup
@@ -41,7 +41,7 @@ func (e *PoolExecutor) Submit(worker Worker) {
 	e.todo <- worker
 }
 
-// ShutdownGracefully waits for completeion of the submitted work and terminates worker goroutines
+// ShutdownGracefully waits for completion of the submitted work and terminates worker goroutines
 func (e *PoolExecutor) ShutdownGracefully() {
 	e.workWG.Wait()
 	close(e.todo)

@@ -31,6 +31,6 @@ func LoadConfig() Conf {
 }
 
 func archiveFile() string {
-	time := time.Now().Format("2006-01-02-15-04-05")
-	return fmt.Sprintf("export%s.zip", time)
+	now := time.Now().Format("2006-01-02-15-04-05")
+	return fmt.Sprintf("export%s.zip", now)
 }

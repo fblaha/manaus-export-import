@@ -10,13 +10,12 @@ import (
 
 // IDLoader capable of loading IDs from files names in the directory
 type IDLoader struct {
-	dir    string
-	suffix string
+	layout
 }
 
 // NewIDLoader constructor
 func NewIDLoader(dir string, suffix string) IDLoader {
-	return IDLoader{dir: dir, suffix: suffix}
+	return IDLoader{layout: layout{dir: dir, suffix: suffix}}
 }
 
 // LoadIDs extracts IDs from file names in the directory
