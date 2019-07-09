@@ -1,0 +1,47 @@
+{
+  "market": {
+    "id": "1000856224250015",
+    "name": "Match Odds",
+    "matchedAmount": 0.0,
+    "inPlay": false,
+    "type": "match_odds",
+    "eventType": {
+      "id": "15",
+      "name": "Soccer"
+    },
+    "competition": {
+      "id": "411997603440010",
+      "name": "Segunda Division"
+    },
+    "event": {
+      "id": "1000856223860116",
+      "name": "CD Tenerife vs Elche CF",
+      "countryCode": null,
+      "timezone": null,
+      "venue": null,
+      "openDate": "2019-01-04T20:00:00Z"
+    },
+    "runners": [
+      {
+        "selectionId": 1000856224320016,
+        "name": "CD Tenerife",
+        "handicap": 0.0,
+        "sortPriority": 0
+      },
+      {
+        "selectionId": 1000856224320015,
+        "name": "Elche CF",
+        "handicap": 0.0,
+        "sortPriority": 1
+      },
+      {
+        "selectionId": 1000856224380016,
+        "name": "DRAW (CD /Elc)",
+        "handicap": 0.0,
+        "sortPriority": 2
+      }
+    ]
+  },
+  "betActions": [],
+  "settledBets": []
+}
