@@ -25,7 +25,6 @@ func NewTransfer(
 
 // Execute executes data transfer
 func (t Transfer) Execute(concurrency int) error {
-	executor := concurrent.NewPoolExecutor(concurrency)
 	ids, err := t.LoadIDs()
 	if err != nil {
 		return errors.Wrap(err, "unable to read ids to transfer")
@@ -38,14 +37,15 @@ func (t Transfer) Execute(concurrency int) error {
 	defer wg.Wait()
 	go func() {
 		defer wg.Done()
-		t.submitWait(ids, executor, results)
+		t.submitWait(ids, concurrency, results)
 		close(results)
 	}()
 
 	return t.collectResults(results)
 }
 
-func (t Transfer) submitWait(ids []string, executor *concurrent.PoolExecutor, results chan<- transferResult) {
+func (t Transfer) submitWait(ids []string, concurrency int, results chan<- transferResult) {
+	executor := concurrent.NewPoolExecutor(concurrency)
 	for _, id := range ids {
 		executor.Submit(transferWorker{
 			DataLoader: t.DataLoader,
