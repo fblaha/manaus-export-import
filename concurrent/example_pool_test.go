@@ -11,7 +11,7 @@ import (
 	"os"
 )
 
-// hashInput contains all inputs needed to hash single file
+// hashInput contains all inputs needed to hash a single file
 type hashInput struct {
 	// file name
 	file string
@@ -26,7 +26,7 @@ type hashOutput struct {
 	err   error
 }
 
-// hashWork hashes single file according to inputs
+// hashWork hashes a single file according to inputs
 type hashWork struct {
 	hashInput
 	out chan<- hashOutput
@@ -38,7 +38,7 @@ func (hw hashWork) Work() {
 	output := hashOutput{hashInput: hw.hashInput}
 	f, err := os.Open(hw.file)
 	if err != nil {
-		// propagates error to output and returns
+		// propagates an error to the output and returns
 		output.err = err
 		hw.out <- output
 		return
@@ -48,18 +48,18 @@ func (hw hashWork) Work() {
 	// creates an instance of hash
 	h := hw.hashFactory()
 	if _, err := io.Copy(h, f); err != nil {
-		// propagates error to output and returns
+		// propagates an error to the output and returns
 		output.err = err
 		hw.out <- output
 		return
 	}
-	// writes computed hash to output channel
+	// writes computed a hash to the output channel
 	output.value = h.Sum(nil)
 	hw.out <- output
 }
 
-// Example demonstrates usage of pool executor with graceful shutdown and result/error propagation,
-// The example iterates all files in current directory.
+// Example demonstrates usage of the pool executor with graceful shutdown and result/error propagation,
+// The example iterates all files in the current directory.
 // For each file computes sha256, sha384 and sha512 hash
 func Example() {
 	// output channel
@@ -70,23 +70,23 @@ func Example() {
 	go func() {
 		// constructs the executor
 		executor := concurrent.NewPoolExecutor(10)
-		// read files from current dir
+		// read files from the current dir
 		files, _ := ioutil.ReadDir(".")
 		for _, file := range files {
 			for _, f := range hashFactories {
-				// submit hash work for execution
+				// submit a hash work for an execution
 				// for each file and each hash
 				executor.Submit(hashWork{out: output, hashInput: hashInput{file: file.Name(), hashFactory: f}})
 			}
 		}
-		// wait for completion and shutdowns executor
+		// wait for the completion and shutdowns executor
 		executor.ShutdownGracefully()
-		// closes output channel
+		// closes the output channel
 		close(output)
 
 	}()
 
-	// iterates output channel and prints results
+	// iterates the output channel and prints the results
 	for result := range output {
 		if result.err != nil {
 			fmt.Printf("hashing of %s failed: %+v\n", result.file, result.err)
@@ -106,7 +106,3 @@ func Example() {
 //pool_test.go (size: 48 bytes) : 60a87b791dbf8bb9bc16154ec35f3c6caff2b701d9f5e4da4cb2e1089ccd419ff9591ece431f81a72bcd4899cac7737d
 //pool.go (size: 32 bytes) : 50f9e39091e96baef7e2c727b5631792634d5eaa0c7d909c741b02f017dca6aa
 //pool.go (size: 48 bytes) : 96a8b8d12c71a55266b9219cc4dc252e9ecc9de43031b6aa62dad0589883d667556e80e52b548c25bc238f5dc816d502
-//
-//func Test(t *testing.T) {
-//	Example()
-//}
