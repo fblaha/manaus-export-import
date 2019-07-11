@@ -9,31 +9,35 @@ import (
 	"io"
 	"io/ioutil"
 	"os"
+	"path/filepath"
 )
+
+// hashFactory factory function for hashes
+type hashFactory func() hash.Hash
 
 // hashInput contains all inputs needed to hash a single file
 type hashInput struct {
 	// file name
 	file string
 	// hash factory
-	hashFactory func() hash.Hash
+	hashFactory hashFactory
 }
 
-// hashOutput contains the hashing output or error
+// hashOutput contains a hashing output or error
 type hashOutput struct {
 	hashInput
 	value []byte
 	err   error
 }
 
-// hashWork hashes a single file according to inputs
+// hashWork hashes a single file according to the inputs
 type hashWork struct {
 	hashInput
 	out chan<- hashOutput
 }
 
 // Work implements Worker interface
-// perform hashing and result writes to output channel
+// perform hashing and a result writes to the output channel
 func (hw hashWork) Work() {
 	output := hashOutput{hashInput: hw.hashInput}
 	f, err := os.Open(hw.file)
@@ -58,25 +62,29 @@ func (hw hashWork) Work() {
 	hw.out <- output
 }
 
-// Example demonstrates usage of the pool executor with graceful shutdown and result/error propagation,
-// The example iterates all files in the current directory.
+// Example demonstrates usage of the pool executor with the graceful shutdown and the result/error propagation,
+// The example iterates all files in the testdata directory.
 // For each file computes sha256, sha384 and sha512 hash
 func Example() {
-	// output channel
+	// the output channel
 	output := make(chan hashOutput)
-	// slices with hashes which we want to compute for each file
-	hashFactories := []func() hash.Hash{sha256.New, sha512.New384, sha512.New}
+	// slice with hash factories for each type of hash
+	hashFactories := []hashFactory{sha256.New, sha512.New384, sha512.New}
 
 	go func() {
-		// constructs the executor
-		executor := concurrent.NewPoolExecutor(10)
-		// read files from the current dir
-		files, _ := ioutil.ReadDir(".")
+		// constructs an executor with a single goroutine (only to have deterministic output in console)
+		// a real world usage will probably use a higher number
+		executor := concurrent.NewPoolExecutor(1)
+		testDir := filepath.Join("testdata")
+
+		// read files from the testdata dir
+		files, _ := ioutil.ReadDir(testDir)
 		for _, file := range files {
-			for _, f := range hashFactories {
+			for _, factory := range hashFactories {
 				// submit a hash work for an execution
 				// for each file and each hash
-				executor.Submit(hashWork{out: output, hashInput: hashInput{file: file.Name(), hashFactory: f}})
+				file := filepath.Join(testDir, file.Name())
+				executor.Submit(hashWork{out: output, hashInput: hashInput{file: file, hashFactory: factory}})
 			}
 		}
 		// wait for the completion and shutdowns executor
@@ -92,17 +100,16 @@ func Example() {
 			fmt.Printf("hashing of %s failed: %+v\n", result.file, result.err)
 			continue
 		}
-		fmt.Printf("%s (size: %d bytes) : %x \n", result.file,result.hashFactory().Size(), result.value)
+		fmt.Printf("%s: %x (hash length: %d bytes)\n", filepath.Base(result.file), result.value, result.hashFactory().Size())
 	}
+	// Output:
+	//1.txt: bf41cf94047f1a3443ca654a235bc8f830f7997da9b6f3b2b041a866bc6e3b6f (hash length: 32 bytes)
+	//1.txt: 2aa9a9c2e8e0a4473812799fe31214cf6cee4e331e5f493d849a85ac0ebbb86fe3ef336b9b257d1fc635809071dda1fa (hash length: 48 bytes)
+	//1.txt: a0109048ea5c5c8db36ddd573ecf3a3830e53773af979ce4ed2287f2970c8f29a2892244caf890217782e7fe39c5b94036ab9ecde3ddbe056ca36abf4df7ac66 (hash length: 64 bytes)
+	//2.txt: 54811cbc6c86311729b0a33e26c89087881b36b9ca3217d15cb5196e35f9a7e3 (hash length: 32 bytes)
+	//2.txt: dfe72d43d92f735ee211d162e204354ff71c2eec4236e04f5b0ccde348e964f68f7334deab350a9fab7d592dd2dfa0d8 (hash length: 48 bytes)
+	//2.txt: 3641e308bbf0cb0c59420e84e30a0091e06f32e0d48f5aac60223cce7d0e3326c3d29755f2c26b44374c815cffdaf6dc579da441bd801a4c3cf9f6a14fcc3537 (hash length: 64 bytes)
+	//3.txt: c03d93310d14ce82b3d8ce9ddc4e9a1ddd791271a88ae8151db6abee6ff98f6d (hash length: 32 bytes)
+	//3.txt: 4ee28c5f7be28c00712410e18658c3681c42966c5f9dc174896ad3871b74dd543deaeffed27892aa2b0b297c60f39d9c (hash length: 48 bytes)
+	//3.txt: 867216026210aebb29f434f6117ddbbf564551e2cea93632e2f2ef2651231ec2bd51c813c1777c1c1c351507f31827d64be03d25a62f08f00dd8f86cb19f6254 (hash length: 64 bytes)
 }
-
-//OUTPUT:
-//example_pool_test.go (size: 32 bytes) : 41f97bfde600c84515184cec2afe2e145fb5ab3babaae0492693151895e1707e
-//pool_test.go (size: 64 bytes) : 08ab4652993b874a5de215067ff82fb4acfbf793fae3d5f229268bfac7c00fc52f43a73eacad9f1d8954fa1b95b64daf760dee30c14fc3d606c1e3d8e09fcefd
-//example_pool_test.go (size: 64 bytes) : 2a1bd7c03df0d49856f5d2d825f8331156f6d37457ed916d23e3d009454f6a8bcc8b755d8bdf58ad037e82651e3570ade356a40c1e2d6f1b1f26b8aafac46021
-//pool_test.go (size: 32 bytes) : 37ca25eb57fc6590349b42e4ab4883451aa73ee3bf171c0827707cdc0c621de1
-//example_pool_test.go (size: 48 bytes) : 626544c44777e4b55f10c4c09f3fe1580b1af52173195a633d0b1f6a3505ea99e43a0d521d29cafe6cd740dfe49fafed
-//pool.go (size: 64 bytes) : 1eb1ee8aebe2bae793848e7316ea9eeca477fe09a248bf9bbaeed72fbc45515bf8c2f17644b48d9dd88275d8a61aae07091f321fa66542f2c95f0f84c10a96ad
-//pool_test.go (size: 48 bytes) : 60a87b791dbf8bb9bc16154ec35f3c6caff2b701d9f5e4da4cb2e1089ccd419ff9591ece431f81a72bcd4899cac7737d
-//pool.go (size: 32 bytes) : 50f9e39091e96baef7e2c727b5631792634d5eaa0c7d909c741b02f017dca6aa
-//pool.go (size: 48 bytes) : 96a8b8d12c71a55266b9219cc4dc252e9ecc9de43031b6aa62dad0589883d667556e80e52b548c25bc238f5dc816d502
