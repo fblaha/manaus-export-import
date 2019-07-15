@@ -4,7 +4,7 @@ import (
 	"log"
 	"sync"
 
-	"github.com/fblaha/manaus-export-import/concurrent"
+	"github.com/fblaha/pool"
 	"github.com/pkg/errors"
 )
 
@@ -45,7 +45,7 @@ func (t Transfer) Execute(concurrency int) error {
 }
 
 func (t Transfer) submitWait(ids []string, concurrency int, results chan<- transferResult) {
-	executor := concurrent.NewPoolExecutor(concurrency)
+	executor := pool.NewExecutor(concurrency)
 	for _, id := range ids {
 		executor.Submit(transferWorker{
 			DataLoader: t.DataLoader,
