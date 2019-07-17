@@ -16,6 +16,6 @@ func NewDataLoader(url string, loader urlLoader) DataLoader {
 // Load loads data for given ID
 func (l DataLoader) Load(id string) ([]byte, error) {
 	url := l.url + id
-	log.Println("loading data from :", url)
+	log.Println("loading data from:", url)
 	return l.loader(url)
 }

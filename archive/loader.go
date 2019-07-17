@@ -24,6 +24,6 @@ func NewDataLoader(dir string, suffix string) DataLoader {
 // Load data from archive by ID
 func (l DataLoader) Load(id string) ([]byte, error) {
 	filePath := path.Join(l.dir, id+l.suffix)
-	log.Println("loading data from :", filePath)
+	log.Println("loading data from:", filePath)
 	return ioutil.ReadFile(filePath)
 }

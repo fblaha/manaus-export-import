@@ -20,7 +20,7 @@ func NewIDLoader(dir string, suffix string) IDLoader {
 
 // LoadIDs extracts IDs from file names in the directory
 func (l IDLoader) LoadIDs() ([]string, error) {
-	log.Println("loading IDs from :", l.dir)
+	log.Println("loading IDs from:", l.dir)
 	files, err := ioutil.ReadDir(l.dir)
 	if err != nil {
 		return nil, errors.Wrap(err, "unable to read dir : "+l.dir)

@@ -1,23 +1,22 @@
 package ei
 
+import (
+	"github.com/fblaha/pool"
+)
+
 type transferResult struct {
 	id  string
 	err error
 }
 
-type transferWorker struct {
-	DataLoader
-	DataWriter
-	id string
-	c  chan<- transferResult
-}
-
-func (w transferWorker) Work() {
-	data, err := w.Load(w.id)
-	if err != nil {
-		w.c <- transferResult{w.id, err}
-		return
+func createTransferWork(id string, loader DataLoader, writer DataWriter, output chan<- transferResult) pool.WorkerFunc {
+	return func() {
+		data, err := loader.Load(id)
+		if err != nil {
+			output <- transferResult{id, err}
+			return
+		}
+		err = writer.Write(id, data)
+		output <- transferResult{id, err}
 	}
-	err = w.Write(w.id, data)
-	w.c <- transferResult{w.id, err}
 }

@@ -20,7 +20,7 @@ func NewIDLoader(url string, loader urlLoader) IDLoader {
 
 // LoadIDs loads list of IDs from URL
 func (p IDLoader) LoadIDs() ([]string, error) {
-	log.Println("loading IDs from :", p.url)
+	log.Println("loading IDs from:", p.url)
 	bytes, err := p.loader(p.url)
 	if err != nil {
 		return nil, errors.Wrap(err, "unable to load IDs")

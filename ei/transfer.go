@@ -47,12 +47,7 @@ func (t Transfer) Execute(concurrency int) error {
 func (t Transfer) submitWait(ids []string, concurrency int, results chan<- transferResult) {
 	executor := pool.NewExecutor(concurrency)
 	for _, id := range ids {
-		executor.Submit(transferWorker{
-			DataLoader: t.DataLoader,
-			DataWriter: t.DataWriter,
-			id:         id,
-			c:          results,
-		})
+		executor.SubmitFunc(createTransferWork(id, t.DataLoader, t.DataWriter, results))
 	}
 	executor.ShutdownGracefully()
 }
