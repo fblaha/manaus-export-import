@@ -5,11 +5,11 @@ import "log"
 // DataLoader loads data from given URL
 type DataLoader struct {
 	url    string
-	loader urlLoader
+	loader URLLoader
 }
 
 // NewDataLoader constructor of URL based data loader
-func NewDataLoader(url string, loader urlLoader) DataLoader {
+func NewDataLoader(url string, loader URLLoader) DataLoader {
 	return DataLoader{url: url, loader: loader}
 }
 

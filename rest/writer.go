@@ -3,18 +3,20 @@ package rest
 import (
 	"bytes"
 	"fmt"
-	"github.com/pkg/errors"
 	"log"
 	"net/http"
+
+	"github.com/pkg/errors"
 )
 
 // NewWriter constructor
-func NewWriter(url string, contentType string) Writer {
-	return Writer{url: url, contentType: contentType}
+func NewWriter(httpClient httpClient, url string, contentType string) Writer {
+	return Writer{httpClient: httpClient, url: url, contentType: contentType}
 }
 
 // Writer writes to directory by id
 type Writer struct {
+	httpClient  httpClient
 	url         string
 	contentType string
 }
@@ -22,7 +24,9 @@ type Writer struct {
 // Write do http post for given url
 func (w Writer) Write(id string, data []byte) error {
 	log.Printf("posting data (id: %s) to %s", id, w.url)
-	resp, err := http.Post(w.url, w.contentType, bytes.NewBuffer(data))
+	req, err := http.NewRequest("POST", w.url, bytes.NewBuffer(data))
+	req.Header.Set("Content-Type", w.contentType)
+	resp, err := w.httpClient(req)
 	if resp == nil || resp.StatusCode >= 400 {
 		return fmt.Errorf("unexpected response: %+v", resp)
 	}

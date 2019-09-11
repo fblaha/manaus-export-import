@@ -1,33 +1,30 @@
 package rest
 
 import (
-	"context"
-	"github.com/pkg/errors"
 	"io/ioutil"
 	"net/http"
-	"time"
+
+	"github.com/pkg/errors"
 )
 
-type urlLoader func(url string) ([]byte, error)
+type httpClient func(req *http.Request) (*http.Response, error)
 
-// LoadURL loads bytes from URL
-func LoadURL(url string) ([]byte, error) {
-	req, err := http.NewRequest("GET", url, nil)
-	if err != nil {
-		return nil, errors.Wrap(err, "unable to create request")
+// URLLoader loads data from given URL
+type URLLoader func(url string) ([]byte, error)
+
+// NewURLLoader constructor
+func NewURLLoader(httpClient httpClient) URLLoader {
+	return func(url string) ([]byte, error) {
+		req, err := http.NewRequest("GET", url, nil)
+		if err != nil {
+			return nil, errors.Wrap(err, "unable to create request")
+		}
+
+		res, err := httpClient(req)
+		if err != nil {
+			return nil, errors.Wrap(err, "http request failed")
+		}
+
+		return ioutil.ReadAll(res.Body)
 	}
-
-	ctx, cancel := context.WithTimeout(req.Context(), 30*time.Second)
-	defer cancel()
-
-	req = req.WithContext(ctx)
-
-	client := http.DefaultClient
-	res, err := client.Do(req)
-	if err != nil {
-		return nil, errors.Wrap(err, "http request failed")
-	}
-
-	return ioutil.ReadAll(res.Body)
-
 }

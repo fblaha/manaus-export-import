@@ -2,6 +2,8 @@ package ei
 
 import (
 	"log"
+	"net/http"
+	"time"
 
 	"github.com/fblaha/manaus-export-import/archive"
 	"github.com/fblaha/manaus-export-import/config"
@@ -21,8 +23,11 @@ func configureExport(conf config.Conf) (export, func(), error) {
 	log.Println("temp directory created:", tempDir)
 	Writer := archive.NewWriter(tempDir, ".json")
 
-	idLoader := rest.NewIDLoader(conf.MarketIDsURL(), rest.LoadURL)
-	dataLoader := rest.NewDataLoader(conf.FootprintsURL(), rest.LoadURL)
+	client := &http.Client{Timeout: 30 * time.Second}
+	urlLoader := rest.NewURLLoader(client.Do)
+
+	idLoader := rest.NewIDLoader(conf.MarketIDsURL(), urlLoader)
+	dataLoader := rest.NewDataLoader(conf.FootprintsURL(), urlLoader)
 	transfer := NewTransfer(idLoader, dataLoader, Writer)
 	return export{Writer: Writer, Transfer: transfer}, purge, nil
 

@@ -10,11 +10,11 @@ import (
 // IDLoader capable of loading IDs from URL
 type IDLoader struct {
 	url    string
-	loader urlLoader
+	loader URLLoader
 }
 
 // NewIDLoader constructor
-func NewIDLoader(url string, loader urlLoader) IDLoader {
+func NewIDLoader(url string, loader URLLoader) IDLoader {
 	return IDLoader{url: url, loader: loader}
 }
 

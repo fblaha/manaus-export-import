@@ -1,11 +1,12 @@
 package rest
 
 import (
-	"github.com/stretchr/testify/require"
 	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
 	"testing"
+
+	"github.com/stretchr/testify/require"
 )
 
 func TestWriter(t *testing.T) {
@@ -16,7 +17,7 @@ func TestWriter(t *testing.T) {
 	}))
 	defer ts.Close()
 
-	writer := NewWriter(ts.URL, "text/plain")
+	writer := NewWriter(http.DefaultClient.Do, ts.URL, "text/plain")
 	err := writer.Write("ignored", []byte("42"))
 	require.NoError(t, err)
 }
@@ -27,7 +28,7 @@ func TestWriterError(t *testing.T) {
 	}))
 	defer ts.Close()
 
-	writer := NewWriter(ts.URL, "text/plain")
+	writer := NewWriter(http.DefaultClient.Do, ts.URL, "text/plain")
 	err := writer.Write("1000", []byte("42"))
 	require.Error(t, err)
 }

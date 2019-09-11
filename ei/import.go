@@ -2,6 +2,8 @@ package ei
 
 import (
 	"log"
+	"net/http"
+	"time"
 
 	"github.com/fblaha/manaus-export-import/archive"
 	"github.com/fblaha/manaus-export-import/config"
@@ -20,7 +22,8 @@ func Import(conf config.Conf) {
 
 	idLoader := archive.NewIDLoader(tmpDir, ".json")
 	dataLoader := archive.NewDataLoader(tmpDir, ".json")
-	writer := rest.NewWriter(conf.FootprintsURL(), "application/json")
+	client := &http.Client{Timeout: 30 * time.Second}
+	writer := rest.NewWriter(client.Do, conf.FootprintsURL(), "application/json")
 	importer := NewTransfer(idLoader, dataLoader, writer)
 	err = importer.Execute(conf.Concurrency)
 	if err != nil {

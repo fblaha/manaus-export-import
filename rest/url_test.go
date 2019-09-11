@@ -2,10 +2,11 @@ package rest
 
 import (
 	"fmt"
-	"github.com/stretchr/testify/require"
 	"net/http"
 	"net/http/httptest"
 	"testing"
+
+	"github.com/stretchr/testify/require"
 )
 
 func TestLoadURL(t *testing.T) {
@@ -15,7 +16,8 @@ func TestLoadURL(t *testing.T) {
 	}))
 	defer ts.Close()
 
-	res, err := LoadURL(ts.URL)
+	urlLoader := NewURLLoader(http.DefaultClient.Do)
+	res, err := urlLoader(ts.URL)
 	require.NoError(t, err)
 
 	require.Equal(t, "42", string(res))
