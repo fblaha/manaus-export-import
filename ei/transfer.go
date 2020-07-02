@@ -1,11 +1,11 @@
 package ei
 
 import (
+	"fmt"
 	"log"
 	"sync"
 
 	"github.com/fblaha/pool"
-	"github.com/pkg/errors"
 )
 
 // Transfer does data transfer
@@ -27,7 +27,7 @@ func NewTransfer(
 func (t Transfer) Execute(concurrency int) error {
 	ids, err := t.LoadIDs()
 	if err != nil {
-		return errors.Wrap(err, "unable to read ids to transfer")
+		return fmt.Errorf("unable to read ids to transfer: %w", err)
 	}
 
 	results := make(chan transferResult, 1)

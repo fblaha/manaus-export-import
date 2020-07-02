@@ -1,11 +1,10 @@
 package archive
 
 import (
+	"fmt"
 	"io/ioutil"
 	"log"
 	"strings"
-
-	"github.com/pkg/errors"
 )
 
 // IDLoader capable of loading IDs from files names in the directory
@@ -23,7 +22,7 @@ func (l IDLoader) LoadIDs() ([]string, error) {
 	log.Println("loading IDs from:", l.dir)
 	files, err := ioutil.ReadDir(l.dir)
 	if err != nil {
-		return nil, errors.Wrap(err, "unable to read dir : "+l.dir)
+		return nil, fmt.Errorf("unable to read dir : %s %v", l.dir, err)
 	}
 	var ids []string
 	for _, file := range files {

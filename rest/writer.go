@@ -5,8 +5,6 @@ import (
 	"fmt"
 	"log"
 	"net/http"
-
-	"github.com/pkg/errors"
 )
 
 // NewWriter constructor
@@ -25,10 +23,16 @@ type Writer struct {
 func (w Writer) Write(id string, data []byte) error {
 	log.Printf("posting data (id: %s) to %s", id, w.url)
 	req, err := http.NewRequest("POST", w.url, bytes.NewBuffer(data))
+	if err != nil {
+		return fmt.Errorf("unable to create request: %v", err)
+	}
 	req.Header.Set("Content-Type", w.contentType)
 	resp, err := w.httpClient(req)
+	if err != nil {
+		return fmt.Errorf("unable to send request: %v", err)
+	}
 	if resp == nil || resp.StatusCode >= 400 {
 		return fmt.Errorf("unexpected response: %+v", resp)
 	}
-	return errors.Wrap(err, "unable to post data")
+	return nil
 }

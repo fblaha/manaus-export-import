@@ -1,12 +1,12 @@
 package ei
 
 import (
+	"errors"
 	"fmt"
 	"io/ioutil"
 	"testing"
 
 	"github.com/fblaha/manaus-export-import/archive"
-	"github.com/pkg/errors"
 	"github.com/stretchr/testify/require"
 )
 
@@ -76,5 +76,5 @@ func checkTransferError(idLoader mockIDLoader, dataLoader mockDataLoader, dataWr
 	transfer := NewTransfer(idLoader, dataLoader, dataWriter)
 	err := transfer.Execute(10)
 	require.Error(t, err)
-	require.Equal(t, expectedErr, errors.Cause(err))
+	require.True(t, errors.Is(err, expectedErr))
 }

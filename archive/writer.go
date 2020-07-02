@@ -1,14 +1,13 @@
 package archive
 
 import (
+	"fmt"
 	"io/ioutil"
 	"log"
 	"os"
 	"path"
 
 	"github.com/mholt/archiver"
-
-	"github.com/pkg/errors"
 )
 
 // NewWriter constructor
@@ -30,7 +29,7 @@ func (w Writer) Write(id string, data []byte) error {
 	filePath := path.Join(w.dir, id+w.suffix)
 	log.Println("writing data to:", filePath)
 	if err := ioutil.WriteFile(filePath, data, 0644); err != nil {
-		return errors.Wrap(err, "unable to save data to file : "+filePath)
+		return fmt.Errorf("unable to save data to file: %s %v", filePath, err)
 	}
 	return nil
 }
@@ -39,7 +38,7 @@ func (w Writer) Write(id string, data []byte) error {
 func (w Writer) MakeArchive(file string) error {
 	infos, err := ioutil.ReadDir(w.dir)
 	if err != nil {
-		return errors.Wrap(err, "unable to read directory : "+w.dir)
+		return fmt.Errorf("unable to read directory: %s %v", w.dir, err)
 	}
 	var files []string
 	for _, info := range infos {
