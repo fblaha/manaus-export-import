@@ -1,9 +1,9 @@
 language: go
 go: 
- - "1.12.x"
+ - "1.14.x"
 
 before_install:
-  - GO111MODULE=off go get -u golang.org/x/lint/golint
+  - go get -u golang.org/x/lint/golint
 
 script: 
   - go test -v ./...
