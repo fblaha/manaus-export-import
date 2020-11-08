@@ -32,7 +32,7 @@ func LoadConfig() Conf {
 	var archive string
 	var concurrency int
 
-	flag.StringVar(&url, "url", "http://localhost:7777/", "rest URL")
+	flag.StringVar(&url, "url", "http://manaus:7777/", "rest URL")
 	flag.StringVar(&archive, "archive", archiveFile(), "archive file")
 	flag.IntVar(&concurrency, "concurrency", runtime.NumCPU(), "goroutines count")
 	flag.Parse()
